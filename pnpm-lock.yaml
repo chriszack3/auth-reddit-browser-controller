@@ -6,7 +6,7 @@ specifiers:
 
 dependencies:
   dotenv: 16.0.3
-  puppeteer: 19.5.0
+  puppeteer: 19.5.2
 
 packages:
 
@@ -372,8 +372,8 @@ packages:
       once: 1.4.0
     dev: false
 
-  /puppeteer-core/19.5.0:
-    resolution: {integrity: sha512-s2EE2x/7UfvR4AP+6OokY7yEmIboZoQFc2InuWUu5grWG7uka3W2Nch6+R4ERQepH4NO8kkkEBzNO4PqtwU4lQ==}
+  /puppeteer-core/19.5.2:
+    resolution: {integrity: sha512-Rqk+3kqM+Z2deooTYqcYt8lRtGffJdifWa9td9nbJSjhANWsFouk8kLBNUKycewCCFHM8TZUKS0x28OllavW2A==}
     engines: {node: '>=14.1.0'}
     dependencies:
       cross-fetch: 3.1.5
@@ -393,8 +393,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /puppeteer/19.5.0:
-    resolution: {integrity: sha512-601tKJdKu/mlL6l5wklNJiQbIxyEU2N4pwZzFkwhr1VizNYV0Fly1aFMT7qAp7CvzklYLypQGKn7/Zgpy+HheA==}
+  /puppeteer/19.5.2:
+    resolution: {integrity: sha512-xlqRyrhXhVH114l79Y0XqYXUVG+Yfw4sKlvN55t8Y9DxtA5fzI1uqF8SVXbWK5DUMbD6Jo4lpixTZCTTZGD05g==}
     engines: {node: '>=14.1.0'}
     requiresBuild: true
     dependencies:
@@ -402,7 +402,7 @@ packages:
       https-proxy-agent: 5.0.1
       progress: 2.0.3
       proxy-from-env: 1.1.0
-      puppeteer-core: 19.5.0
+      puppeteer-core: 19.5.2
     transitivePeerDependencies:
       - bufferutil
       - encoding

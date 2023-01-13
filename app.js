@@ -5,8 +5,8 @@ const username = process.env.USER_NAME
 const password = process.env.PASS_WORD
 
 const run = async () => {
-    const config = { 
-        headless: false
+    const config = {
+        headless: false,
     }
     const browser = await puppeteer.launch(config);
     const page = await browser.newPage();
@@ -18,8 +18,10 @@ const run = async () => {
     await page.click(`input[id="rem-login-main"]`)
     await page.click(`form[id="login_login-main"] > div.submit > button`)
     await page.waitForNavigation()
+    const localPage = await browser.newPage()
+    await localPage.goto(`http://localhost:9000`)
+    await localPage.waitForSelector('label')
     
-    await browser.close()
 }
 
 run()
