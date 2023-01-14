@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer'
 import dotenv from 'dotenv'
+import axios from 'axios'
 import { runLogIn, runFetchComments } from './lib/functions.mjs'
 dotenv.config()
 
@@ -11,12 +12,15 @@ const run = async (threadLink) => {
         headless: false,
     }
     const browser = await puppeteer.launch(config);
-    const page = await browser.newPage();
 
-    
-    
-    await runLogIn(page, username, password)
-    await runFetchComments(page, threadLink)
+    await runLogIn(browser, username, password)
+    const comments = await runFetchComments(browser, threadLink)
+    comments.forEach(async (comment) => {
+      const response = await axios.post(`http://localhost:9000/api/OpenAi`, {
+        prompt: comment
+      })
+      console.log(response)
+    })
     const localPage = await browser.newPage()
     await localPage.goto(`http://localhost:9000`)
     await localPage.waitForSelector('textarea')
