@@ -12,19 +12,19 @@ const run = async (threadLink) => {
         headless: false,
     }
     const browser = await puppeteer.launch(config);
-
-    await runLogIn(browser, username, password)
-    const comments = await runFetchComments(browser, threadLink)
+    const page = await browser.newPage()
+    const loggedIn = await runLogIn(page, username, password)
+    const comments = await runFetchComments(loggedIn, threadLink)
     comments.forEach(async (comment) => {
-      const response = await axios.post(`http://localhost:9000/api/OpenAi`, {
-        prompt: comment
-      })
-      console.log(response)
+      // const response = await axios.post(`http://localhost:9000/api/OpenAi`, {
+      //   prompt: comment
+      // })
+      console.log(comment)
     })
-    const localPage = await browser.newPage()
-    await localPage.goto(`http://localhost:9000`)
-    await localPage.waitForSelector('textarea')
-    await localPage.type(`textarea[type="text"]`, 'type this')
+    // const localPage = await browser.newPage()
+    // await localPage.goto(`http://localhost:9000`)
+    // await localPage.waitForSelector('textarea')
+    // await localPage.type(`textarea[type="text"]`, 'type this')
     const timeout = () => {
       setTimeout(() => browser.close(), 5000)
     }
