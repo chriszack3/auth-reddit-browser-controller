@@ -6,31 +6,34 @@ dotenv.config()
 
 const username = process.env.USER_NAME
 const password = process.env.PASS_WORD
-
-const run = async (threadLink) => {
-    const config = {
-        headless: false,
-    }
-    const browser = await puppeteer.launch(config);
-    const page = await browser.newPage()
-    const loggedIn = await runLogIn(page, username, password)
-    const comments = await runFetchComments(loggedIn, threadLink)
-    comments.forEach(async (comment) => {
-      // const response = await axios.post(`http://localhost:9000/api/OpenAi`, {
-      //   prompt: comment
-      // })
-      console.log(comment)
-    })
-    // const localPage = await browser.newPage()
-    // await localPage.goto(`http://localhost:9000`)
-    // await localPage.waitForSelector('textarea')
-    // await localPage.type(`textarea[type="text"]`, 'type this')
-    const timeout = () => {
-      setTimeout(() => browser.close(), 5000)
-    }
-    timeout()
-    
+const config = {
+  headless: false,
 }
 
-run("https://old.reddit.com/r/feet/comments/10bnmcv/white_toes_anyone/")
+const run = async (sub) => {
+  const config = {
+    headless: false,
+  }
+  const browser = await puppeteer.launch(config);
+  const page = await browser.newPage()
+  await page.goto(`https://old.reddit.com`);
 
+  await page.goto(`https://old.reddit.com/r/${sub}/top/?sort=top&t=all`)
+
+  await Promise.all([
+    await page.click(`button[value= "yes"]`),
+    await page.waitForNavigation()
+  ])
+
+  const options = await page.$$eval('a[data-event-action="title"]', options => {
+    return options.map(option => option.textContent);
+  });
+  console.log(options)
+
+  const timeout = () => {
+    setTimeout(() => browser.close(), 5000)
+  }
+  timeout()
+}
+
+run('FootFetishTalks')
