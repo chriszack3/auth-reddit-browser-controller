@@ -6,34 +6,29 @@ dotenv.config()
 
 const username = process.env.USER_NAME
 const password = process.env.PASS_WORD
-const config = {
-  headless: false,
-}
 
 const run = async (sub) => {
   const config = {
     headless: false,
+    args: ["--disable-notifications"]
   }
   const browser = await puppeteer.launch(config);
   const page = await browser.newPage()
-  await page.goto(`https://old.reddit.com`);
-
-  await page.goto(`https://old.reddit.com/r/${sub}/top/?sort=top&t=all`)
-
-  await Promise.all([
-    await page.click(`button[value= "yes"]`),
-    await page.waitForNavigation()
-  ])
-
-  const options = await page.$$eval('a[data-event-action="title"]', options => {
-    return options.map(option => option.textContent);
-  });
-  console.log(options)
-
-  const timeout = () => {
-    setTimeout(() => browser.close(), 5000)
-  }
-  timeout()
+  
+  await page.goto(`https://www.reddit.com/login/`);
+  // Type into search box.
+  await page.type(`input[id="loginUsername"]`, username);
+  await page.type(`input[id="loginPassword"]`, password);
+  await page.click(`button[type="submit"]`)
+  await page.waitForNavigation()
+  await page.click(`i.icon-chat`)
+  
+  await page.waitForSelector(`button[aria-label="Close"]`)
+  await page.click(`button[aria-label="Close"]`)
+  await page.waitForNetworkIdle()
+  const messages = await page.$$(`main#tooltip-container > div > div > div > div > div > a`, (messages) => messages)
+  messages[1].click()
+  
 }
 
 run('FootFetishTalks')
