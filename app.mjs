@@ -26,8 +26,33 @@ const run = async (sub) => {
   await page.waitForSelector(`button[aria-label="Close"]`)
   await page.click(`button[aria-label="Close"]`)
   await page.waitForNetworkIdle()
-  const messages = await page.$$(`main#tooltip-container > div > div > div > div > div > a`, (messages) => messages)
-  messages[1].click()
+  const msgThreads = await page.$$(`main#tooltip-container > div > div > div > div > div > a`)
+  console.log(msgThreads[2])
+  await msgThreads[2].click()
+  await page.waitForSelector(`main#tooltip-container > div > div > div > div> div > span > span > pre`)
+  const messages = await page.$$eval(`main#tooltip-container > div > div > div > div`, (options) => {
+    console.log(options)
+    return options.map(option => option.innerHTML);
+  })
+ console.log(messages)
+  
+  //messages.forEach((thread) => {
+    // await thread.click()
+    // await page.waitForSelector(`#tooltip-container > div > div > div > div > div > span`)
+    // const threadContent = await page.$eval(`#tooltip-container > div > div > div > div > div > span`, (msg) => msg)
+    // const previousChats = await page.$$eval(`#tooltip-container > div > div > div > div > div`, (chats) => {
+    //   return chats
+    // })
+    //console.log(thread)
+  //document.querySelector("#tooltip-container > div > div > div > div> div > span > span > pre")
+  //})
+  // let i = 0
+  // for (i < messages.length - 1; i++;) {
+  //   await messages[i].click()
+  //   const previousChats = await page.$$(`#tooltip-container > div > div > div > div > div > span:nth-child(3) > span`, (chats) => chats.innerText)
+  //   console.log(previousChats)
+  //   i++
+  // }
   
 }
 
