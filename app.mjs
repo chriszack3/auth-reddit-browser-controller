@@ -27,14 +27,26 @@ const run = async (sub) => {
   await page.click(`button[aria-label="Close"]`)
   await page.waitForNetworkIdle()
   const msgThreads = await page.$$(`main#tooltip-container > div > div > div > div > div > a`)
-  console.log(msgThreads[2])
-  await msgThreads[2].click()
-  await page.waitForSelector(`main#tooltip-container > div > div > div > div> div > span > span > pre`)
-  const messages = await page.$$eval(`main#tooltip-container > div > div > div > div`, (options) => {
-    console.log(options)
-    return options.map(option => option.innerHTML);
-  })
- console.log(messages)
+  
+  let messagesArr = []
+  for (let i = 0; i < msgThreads.length; i++) {
+    await msgThreads[i].click()
+    await page.waitForNetworkIdle()
+    const messages = await page.$$eval(`main#tooltip-container > div > div > div > div > div > span`, (options) => {
+      return {
+        threadMessages: options.map(option => {
+          return {
+            html: option.innerHTML,
+            text: option.innerText,
+          }
+        })
+      }
+    })
+    messagesArr.push(messages)
+    
+  }
+  
+ console.log(messagesArr)
   
   //messages.forEach((thread) => {
     // await thread.click()
