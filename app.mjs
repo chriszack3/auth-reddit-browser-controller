@@ -1,7 +1,9 @@
 import puppeteer from 'puppeteer'
 import dotenv from 'dotenv'
+import fs from 'fs'
 import axios from 'axios'
 import { runLogIn, runFetchComments } from './lib/functions.mjs'
+
 dotenv.config()
 
 const username = process.env.USER_NAME
@@ -32,21 +34,31 @@ const run = async (sub) => {
   for (let i = 0; i < msgThreads.length; i++) {
     await msgThreads[i].click()
     await page.waitForNetworkIdle()
-    const messages = await page.$$eval(`main#tooltip-container > div > div > div > div > div > span`, (options) => {
+    const messages = await page.$$eval(`main#tooltip-container > div > div > div > div > div > span`, (options, index) => {
+      const threadMessages = options.map(option => {
+        return {
+          html: option.innerHTML,
+          text: option.innerText,
+        }
+      })
+      const usernames = threadMessages?.[0]?.text
       return {
-        threadMessages: options.map(option => {
-          return {
-            html: option.innerHTML,
-            text: option.innerText,
-          }
-        })
+        threadMessages,
+        usernames,
+        
       }
     })
     messagesArr.push(messages)
     
   }
+  const date = Date.now().toString()
   
- console.log(messagesArr)
+  try {
+    fs.writeFileSync(`./logs/messageLogs/${date}.json`, JSON.stringify(messagesArr));
+    // file written successfully
+  } catch (err) {
+    console.error(err);
+  }
   
   //messages.forEach((thread) => {
     // await thread.click()
