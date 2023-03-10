@@ -1,9 +1,5 @@
 import puppeteer from 'puppeteer'
 import dotenv from 'dotenv'
-import fs from 'fs'
-import axios from 'axios'
-import { runLogIn, runFetchComments } from './lib/functions.mjs'
-import { error } from 'console'
 
 dotenv.config()
 
@@ -13,16 +9,10 @@ const config = {
   headless: false,
   args: ["--disable-notifications"]
 }
+
 const run = async (username, password, config) => {
-
-
-  const browser = await puppeteer.launch(config);
-  const page = await browser.newPage()
-
   const runLogin = async (page) => {
-    console.log(page)
     const toBeCompleted = new Promise(async (res, rej) => {
-      console.log('tbd running: ' + page)
       await page.goto(`https://www.reddit.com/login/`);
       // Type into search box.
       await page.type(`input[id="loginUsername"]`, username);
@@ -33,8 +23,20 @@ const run = async (username, password, config) => {
     })
     return await Promise.all([toBeCompleted])
   }
-  console.log(page)
+  const checkForModal = async(page) => {
+    const toBeCompleted = new Promise(async (res, rej) => {
+      setTimeout(async () => await Promise.all([await page.waitForSelector(`div[aria-modal="true"]`, 5000)]), 5000)
+      const done = await page.waitForSelector(`div[aria-modal="true"]`, 5000).then(async() => {
+        await page.click(`button[aria-label="Close"]`)
+      }, (err) => console.log(`Caught: ${err ?? 'No err object'}`))
+      return done?.error ? rej(done) : res(done)
+    })
+    return await Promise.all([toBeCompleted])
+  }
+  const browser = await puppeteer.launch(config);
+  const page = await browser.newPage()
   await runLogin(page)
+  await checkForModal(page)
   // await page.click(`i.icon-chat`)
 
   // await page.waitForSelector(`div[aria-modal="true"]`, 5000)
