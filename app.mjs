@@ -23,20 +23,42 @@ const run = async (username, password, config) => {
     })
     return await Promise.all([toBeCompleted])
   }
-  const checkForModal = async(page) => {
+  const checkForModal = async (page) => {
     const toBeCompleted = new Promise(async (res, rej) => {
-      setTimeout(async () => await Promise.all([await page.waitForSelector(`div[aria-modal="true"]`, 5000)]), 5000)
-      const done = await page.waitForSelector(`div[aria-modal="true"]`, 5000).then(async() => {
-        await page.click(`button[aria-label="Close"]`)
-      }, (err) => console.log(`Caught: ${err ?? 'No err object'}`))
+      const done = await page.waitForSelector(`div[aria-modal="true"]`, 5000)
+        .then(async () => {
+          await page.click(`button[aria-label="Close"]`)
+        })
+        .catch((error) => {
+          console.log('checkForModal Error: ' + err)
+          return error
+        })
+
       return done?.error ? rej(done) : res(done)
     })
     return await Promise.all([toBeCompleted])
   }
+
+  const runGetChatThreads = async (page) => {
+    const toBeCompleted = new Promise(async (res, rej) => {
+      await page.click(`i.icon-chat`)
+      await page.waitForSelector(`main#tooltip-container > div > div > div > div > div:last-child > a`)
+      res(await page.$$(`main#tooltip-container > div > div > div > div > div > a > div > h4 > span`) ?? rej('Error'))
+      //   .then((threads) => {
+      //   return threads?.length > 0 ? res(threads) : rej("runGetChatThreads Error: " + err ?? "No error message")
+      // })
+    })
+    return await Promise.all([toBeCompleted])
+  }
+
   const browser = await puppeteer.launch(config);
   const page = await browser.newPage()
   await runLogin(page)
   await checkForModal(page)
+  const [threads] = await runGetChatThreads(page).catch(err => console.log(err))
+  console.log(threads)
+  
+
   // await page.click(`i.icon-chat`)
 
   // await page.waitForSelector(`div[aria-modal="true"]`, 5000)
